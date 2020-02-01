@@ -1,0 +1,53 @@
+:- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_error)).
+:- use_module(library(http/json_convert)).
+
+:- use_module(library(http/html_write)).
+:- use_module(library(http/http_parameters)).
+:- use_module(library(http/http_json)).
+:- use_module(clearance).
+
+:- http_handler('/', say_hi, []).
+
+server(Port) :-
+        http_server(http_dispatch, [port(Port)]).
+
+/*
+
+browse http://127.0.0.1:8000/?baz=3&baz=4
+
+This demonstrates handling parameters.
+Not all type checking options are demonstrated, see
+http://www.swi-prolog.org/pldoc/doc_for?object=section%283,%273.9%27,swi%28%27/doc/packages/http.html%27%29%29
+   */
+
+say_hi(Request) :-
+    catch(
+    http_parameters(Request,
+       [
+        % default for a missing param
+        user(User, [optional(false)]),
+        % if bar param is missing Bar will be unbound
+        document(Document, [optional(false)])
+       ]),
+    _E,
+    fail),
+    % canAccessRet(User,Document,atom(R)),
+    assertz(canAccess(User,Document)),
+    prolog_to_json(true,JSONOut),
+    reply_json(JSONOut).
+    %prolog_to_json(canAccess(User,Document),JSONOut),
+    %print(JSONOut),
+    %reply_json(JSONOut).
+
+page_content(_Request) -->
+	html(
+	    [
+	    h1('Oops!'),
+	    p('Some parameter wasnt valid')
+	    ]).
+
+
+something(R) :- R is 5.
+%canAccessRet(User,Document,R) :- R is canAccess(User,Document).

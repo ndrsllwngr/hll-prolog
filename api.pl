@@ -23,9 +23,7 @@ check_access_rights_request(Request) :-
     catch(
     http_parameters(Request,
        [
-        % default for a missing param
         user(User, [optional(false)]),
-        % if bar param is missing Bar will be unbound
         document(Document, [optional(false)])
        ]),
     _E,
@@ -41,7 +39,6 @@ get_documents_accessible_by_user_request(Request) :-
     catch(
     http_parameters(Request,
        [
-        % default for a missing param
         user(User, [optional(false)])
        ]),
     _E,
@@ -57,7 +54,6 @@ get_documents_accessible_with_clearance_request(Request) :-
     catch(
     http_parameters(Request,
        [
-        % default for a missing param
         clearance(Clearance, [optional(false)])
        ]),
     _E,
@@ -76,14 +72,3 @@ get_users_request(Request) :-
     get_users(R),
     prolog_to_json(R,JSONOut),
     reply_json(JSONOut).
-
-page_content(_Request) -->
-	html(
-	    [
-	    h1('Oops!'),
-	    p('Some parameter wasnt valid')
-	    ]).
-
-
-something(R) :- R is 5.
-%canAccessRet(User,Document,R) :- R is canAccess(User,Document).

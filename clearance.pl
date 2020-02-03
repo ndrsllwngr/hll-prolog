@@ -36,7 +36,9 @@ superior(official,unclassified).
  
 % ------- rules ------
 
-canAccess(U,D,R) :- canAccess(U,D) -> R = true; R = false.
+canAccess(U,D,true) :- canAccess(U,D).
+canAccess(_,_,false).
+
 canAccess(U,D) :- userClearance(U,CU), documentClearance(D,CD), higher_or_equal(CU,CD).
 
 accessible_with_clearance(D,C) :- documentClearance(D,CD), higher_or_equal(C,CD).
@@ -65,7 +67,9 @@ get_users(R) :- findall(U,user(U),R).
 insert_document(Document) :- assert(document(Document)).
 insert_document_clearance(Document,Clearance) :- assert(documentClearance(Document,Clearance)).
 insert_document_with_clearance(Document,Clearance) :- remove_document_and_clearance(Document), insert_document(Document), insert_document_clearance(Document,Clearance).
-insert_document_with_clearance(Document,Clearance, R) :- insert_document_with_clearance(Document,Clearance) -> R = true; R = false.
+
+insert_document_with_clearance(Document,Clearance, true) :- insert_document_with_clearance(Document,Clearance).
+insert_document_with_clearance(_,_, false).
 
 remove_document_and_clearance(User) :- remove_document(User), remove_document_clearance(User).
 remove_document(User) :- retractall(document(User)).
@@ -74,7 +78,9 @@ remove_document_clearance(User) :- retractall(documentClearance(User,_)).
 insert_user(User) :- assert(user(User)).
 insert_user_clearance(User,Clearance) :- assert(userClearance(User,Clearance)).
 insert_user_with_clearance(User,Clearance) :- remove_user_and_clearance(User), insert_user(User), insert_user_clearance(User,Clearance).
-insert_user_with_clearance(User,Clearance,R) :- insert_user_with_clearance(User,Clearance) -> R = true; R = false.
+
+insert_user_with_clearance(User,Clearance,true) :- insert_user_with_clearance(User,Clearance).
+insert_user_with_clearance(_,_,false).
 
 remove_user_and_clearance(User) :- remove_user(User), remove_user_clearance(User).
 remove_user(User) :- retractall(user(User)).
@@ -83,10 +89,14 @@ remove_user_clearance(User) :- retractall(userClearance(User,_)).
 % ------- update datamodel ------
 
 create_user_with_user(UserCreate, Clearance, UserAccess) :- userClearance(UserAccess, UserAccessClearance), higher(UserAccessClearance, Clearance), insert_user_with_clearance(UserCreate,Clearance).
-create_user_with_user(UserCreate, Clearance, UserAccess,R) :- create_user_with_user(UserCreate, Clearance, UserAccess) -> R = true; R = false.
+
+create_user_with_user(UserCreate, Clearance, UserAccess, true) :- create_user_with_user(UserCreate, Clearance, UserAccess).
+create_user_with_user(_, _, _, false).
 
 create_document_with_user(Document, Clearance, UserAccess) :- userClearance(UserAccess, UserAccessClearance), higher(UserAccessClearance, Clearance),insert_document_with_clearance(Document,Clearance).
-create_document_with_user(Document, Clearance, UserAccess,R) :- create_document_with_user(Document, Clearance, UserAccess) -> R = true; R = false.
+
+create_document_with_user(Document, Clearance, UserAccess, true) :- create_document_with_user(Document, Clearance, UserAccess).
+create_document_with_user(_, _, _, false).
 
 main :- 
     insert_user_with_clearance(trump,topsecret).

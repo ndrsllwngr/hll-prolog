@@ -1,13 +1,14 @@
+:- module(api, [start_server/1]).
+
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_error)).
 :- use_module(library(http/json_convert)).
-
 :- use_module(library(http/http_client)).
-
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_parameters)).
 :- use_module(library(http/http_json)).
+
 :- use_module(clearance).
 
 :- http_handler('/', check_access_rights_request, []).
@@ -17,7 +18,7 @@
 :- http_handler('/create_user', create_user_request, []).
 :- http_handler('/create_document', create_document_request, []).
 
-server(Port) :-
+start_server(Port) :-
         http_server(http_dispatch, [port(Port)]).
 
 
@@ -38,7 +39,7 @@ check_access_rights_request(Request) :-
 
 
 % example: 
-% http://localhost:5004/documents_for_user/?user=timo
+% http://localhost:5004/documents_for_user?user=timo
 get_documents_accessible_by_user_request(Request) :-
     catch(
     http_parameters(Request,
@@ -53,7 +54,7 @@ get_documents_accessible_by_user_request(Request) :-
 
 
 % example: 
-% http://localhost:5004/documents_with_clearance/?clearance=topsecret
+% http://localhost:5004/documents_with_clearance?clearance=topsecret
 get_documents_accessible_with_clearance_request(Request) :-
     catch(
     http_parameters(Request,
@@ -94,6 +95,8 @@ create_document_request(Request) :-
     insert_document_with_clearance(DocumentA,ClearanceA,R),
     prolog_to_json(R,JSONOut),
     reply_json(JSONOut).
+
+main :- server(5004).
 
 /*:- http_handler('/form', web_form, []).
 web_form(_Request) :-

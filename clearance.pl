@@ -1,4 +1,12 @@
-:- module(clearance, [canAccess/3,insert_user_with_clearance/2, insert_document_with_clearance/2, get_users/1, get_users_of_clearance_or_lower/2, get_documents_accesible_with_clearance/2, get_documents_accesible_by_user/2]).
+:- module(clearance, [
+    canAccess/3,
+    insert_user_with_clearance/3, 
+    insert_document_with_clearance/3,
+    get_users/1, 
+    get_users_of_clearance_or_lower/2, 
+    get_documents_accesible_with_clearance/2, 
+    get_documents_accesible_by_user/2
+]).
 
 :- use_module(library(lists)).
 
@@ -73,7 +81,7 @@ get_users(R) :- findall(U,user(U),R).
 
 insert_document(U) :- assert(document(U)).
 insert_document_clearance(U,C) :- assert(documentClearance(U,C)).
-insert_document_with_clearance(U,C) :- remove_document_and_clearance(U), insert_document(U), insert_document_clearance(U,C).
+insert_document_with_clearance(U,C, R) :- (remove_document_and_clearance(U), insert_document(U), insert_document_clearance(U,C)) -> R = true; R = false.
 
 remove_document_and_clearance(U) :- remove_document(U), remove_document_clearance(U).
 remove_document(U) :- retractall(document(U)).
@@ -81,8 +89,9 @@ remove_document_clearance(U) :- retractall(documentClearance(U,_)).
 
 insert_user(U) :- assert(user(U)).
 insert_user_clearance(U,C) :- assert(userClearance(U,C)).
-insert_user_with_clearance(U,C) :- remove_user_and_clearance(U), insert_user(U), insert_user_clearance(U,C).
+insert_user_with_clearance(U,C,R) :- (remove_user_and_clearance(U), insert_user(U), insert_user_clearance(U,C)) -> R = true; R = false.
 
 remove_user_and_clearance(U) :- remove_user(U), remove_user_clearance(U).
 remove_user(U) :- retractall(user(U)).
 remove_user_clearance(U) :- retractall(userClearance(U,_)).
+

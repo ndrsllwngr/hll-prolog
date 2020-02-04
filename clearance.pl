@@ -95,6 +95,3 @@ create_document_with_user(Document, Clearance, UserAccess) :- userClearance(User
 
 create_document_with_user(Document, Clearance, UserAccess, true) :- create_document_with_user(Document, Clearance, UserAccess).
 create_document_with_user(_, _, _, false) :- !.
-
-main :- 
-    insert_user_with_clearance(trump,topsecret).

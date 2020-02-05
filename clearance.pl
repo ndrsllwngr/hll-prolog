@@ -41,7 +41,7 @@ canAccess(U,D) :- userClearance(U,CU), documentClearance(D,CD), higher_or_equal(
 
 accessible_with_clearance(D,C) :- documentClearance(D,CD), higher_or_equal(C,CD).
 
-higher_or_equal(P,L) :-  P == L.
+higher_or_equal(P,L) :-  P = L.
 higher_or_equal(P,L) :-  higher(P, L).
 
 higher(P,L) :-  superior(P, L).

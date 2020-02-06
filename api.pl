@@ -34,7 +34,7 @@ check_access_rights_request(Request) :-
        ]),
     _E,
     fail),
-    can_access(User,Document,R),
+    can_read(User,Document,R),
     prolog_to_json(R,JSONOut),
     reply_json(JSONOut).
 
@@ -75,7 +75,7 @@ get_users_request(Request) :-
     http_parameters(Request,[]),
     _E,
     fail),
-    get_users(R),
+    get_all_users(R),
     prolog_to_json(R,JSONOut),
     reply_json(JSONOut).
 

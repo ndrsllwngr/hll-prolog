@@ -34,7 +34,7 @@ check_access_rights_request(Request) :-
        ]),
     _E,
     fail),
-    canAccess(User,Document,R),
+    can_access(User,Document,R),
     prolog_to_json(R,JSONOut),
     reply_json(JSONOut).
 

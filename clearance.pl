@@ -36,7 +36,6 @@ superior(official,unclassified).
 
 canAccess(U,D,true) :- canAccess(U,D).
 canAccess(_,_,false) :- !.
-
 canAccess(U,D) :- userClearance(U,CU), documentClearance(D,CD), higher_or_equal(CU,CD).
 
 accessible_with_clearance(D,C) :- documentClearance(D,CD), higher_or_equal(C,CD).

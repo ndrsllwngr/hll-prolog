@@ -95,23 +95,3 @@ create_document_request(Request) :-
     insert_document_with_clearance(DocumentA,ClearanceA,R),
     prolog_to_json(R,JSONOut),
     reply_json(JSONOut).
-
-main :- server(5004).
-
-/*:- http_handler('/form', web_form, []).
-web_form(_Request) :-
-	reply_html_page(
-	    title('POST demo'),
-	    [
-	     form([action='/create_user', method='POST'], [
-		p([], [
-		  label([for=user],'User:'),
-		  input([name=user, type=textarea])
-		      ]),
-		p([], [
-		  label([for=clearance],'Clearance:'),
-		  input([name=clearance, type=textarea])
-		      ]),
-		p([], input([name=submit, type=submit, value='Submit'], []))
-	      ])]).
-*/

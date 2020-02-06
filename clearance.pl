@@ -11,7 +11,12 @@
     get_documents_accesible_by_user/2,
     %todo split into multiple modules
     insert_user_with_clearance/3, 
-    insert_document_with_clearance/3
+    insert_document_with_clearance/3,
+    create_user_as_user/4,
+    create_document_as_user/4,
+    update_user_clearance_as_user/3,
+    remove_user_as_user/2,
+    remove_document_as_user/2
 ]).
 
 :- use_module(library(lists)).
@@ -94,9 +99,9 @@ remove_user_clearance(User) :- retractall(userClearance(User, _)).
 
 % ------- update datamodel ------
 
-create_user_as_user(User, Clearance, AccessUser, R) :-    has_user_rights(AccessUser, Clearance),
-                                                                insert_user_with_clearance(User, Clearance, CreatedUser),
-                                                                R = CreatedUser.
+create_user_as_user(User, Clearance, AccessUser, R) :-      has_user_rights(AccessUser, Clearance),
+                                                            insert_user_with_clearance(User, Clearance, CreatedUser),
+                                                            R = CreatedUser.
                                                             
 create_document_as_user(Document, Clearance, AccessUser, R) :-  has_document_rights(AccessUser, Clearance),
                                                                 insert_document_with_clearance(Document, Clearance, Document),

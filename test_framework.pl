@@ -1,13 +1,20 @@
 :- module(test_framework, [
-    should_equal/2,
-    should_not_equal/2,
-    should_evaluate/2,
-    to/2
-    ]).
+        op(200, xfx, should_equal),
+        op(200, xfx, should_not_equal),
+        op(300, xfx, should_evaluate),
+        op(300, xfx, should_not_evaluate),
+        op(400, xfx, to),
+        should_equal/2,
+        should_not_equal/2,
+        should_evaluate/2,
+        should_not_evaluate/2,
+        to/2
+]).
 
 :- op(200, xfx, should_equal).
 :- op(200, xfx, should_not_equal).
 :- op(300, xfx, should_evaluate).
+:- op(300, xfx, should_not_evaluate).
 :- op(400, xfx, to).
 
 
@@ -20,6 +27,9 @@ should_not_equal(X, Y) :- \+ should_equal(X, Y).
 
 should_evaluate(Text, Term) :-  write_start(Text), 
                                 call(Term) -> write_success; write_failure, fail.
+
+should_not_evaluate(Text, Term) :-  write_start(Text), 
+                                    call(Term) -> write_failure, fail; write_success.
 
 to(should_evaluate(Text, Term),ExpectedResult) :-   write_start(Text), 
                                                     term_variables(Term,L),

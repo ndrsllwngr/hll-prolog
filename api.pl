@@ -11,6 +11,11 @@
 
 :- use_module(clearance).
 
+% Webserver
+start_server(Port) :-
+    http_server(http_dispatch, [port(Port)]).
+
+% Routes
 :- http_handler('/', check_access_rights_request, []).
 :- http_handler('/users', get_users_request, []).
 :- http_handler('/documents_with_clearance', get_documents_accessible_with_clearance_request, []).
@@ -18,12 +23,8 @@
 :- http_handler('/create_user', create_user_request, []).
 :- http_handler('/create_document', create_document_request, []).
 
-start_server(Port) :-
-        http_server(http_dispatch, [port(Port)]).
-
-
 % example: 
-% http://localhost:5004/?user=timo&document=panamaPapers
+% GET http://localhost:5004/?user=timo&document=panamaPapers
 check_access_rights_request(Request) :-
     catch(
     http_parameters(Request,
@@ -39,7 +40,7 @@ check_access_rights_request(Request) :-
 
 
 % example: 
-% http://localhost:5004/documents_for_user?user=timo
+% GET http://localhost:5004/documents_for_user?user=timo
 get_documents_accessible_by_user_request(Request) :-
     catch(
     http_parameters(Request,
@@ -54,7 +55,7 @@ get_documents_accessible_by_user_request(Request) :-
 
 
 % example: 
-% http://localhost:5004/documents_with_clearance?clearance=topsecret
+% GET http://localhost:5004/documents_with_clearance?clearance=topsecret
 get_documents_accessible_with_clearance_request(Request) :-
     catch(
     http_parameters(Request,
@@ -68,7 +69,7 @@ get_documents_accessible_with_clearance_request(Request) :-
     reply_json(JSONOut).
 
 % example: 
-% http://localhost:5004/users/
+% GET http://localhost:5004/users/
 get_users_request(Request) :-
     catch(
     http_parameters(Request,[]),
@@ -78,6 +79,8 @@ get_users_request(Request) :-
     prolog_to_json(R,JSONOut),
     reply_json(JSONOut).
 
+% example: 
+% POST http://localhost:5004/create_user/
 create_user_request(Request) :-
     member(method(post), Request), !,
     http_read_json_dict(Request, _{user:User, clearance:Clearance}),
@@ -87,6 +90,8 @@ create_user_request(Request) :-
     prolog_to_json(R,JSONOut),
     reply_json(JSONOut).
 
+% example: 
+% POST http://localhost:5004/create_document/
 create_document_request(Request) :-
     member(method(post), Request), !,
     http_read_json_dict(Request, _{document:Document, clearance:Clearance}),

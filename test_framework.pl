@@ -25,21 +25,18 @@ should_equal([H1|T1], [H2|T2]) :-   sort(0, @=<, [H1|T1], S1),
 
 should_not_equal(X, Y) :- \+ should_equal(X, Y).
 
-should_evaluate(Text, Term) :-  write_start(Text), 
-                                call(Term) -> write_success; write_failure, fail.
+should_evaluate(Text, Term) :-  call(Term) -> write_statement(Text,success); write_statement(Text,failure).
 
-should_not_evaluate(Text, Term) :-  write_start(Text), 
-                                    call(Term) -> write_failure, fail; write_success.
+should_not_evaluate(Text, Term) :-  call(Term) -> write_statement(Text,failure); write_statement(Text,success).
 
-to(should_evaluate(Text, Term),ExpectedResult) :-   write_start(Text), 
-                                                    term_variables(Term,L),
+to(should_evaluate(Text, Term),ExpectedResult) :-   term_variables(Term,L),
                                                     last_element_of_list(L,R), 
                                                     call(Term),
-                                                    ExpectedResult should_equal R -> write_success ; write_failure, fail.
+                                                    ExpectedResult should_equal R -> write_statement(Text,success) ; write_statement(Text,failure).
 
-write_start(Text) :-  write(Text), write(" - ").
-write_success :- write("succeeds\n").
-write_failure :- write("fails\n").
+write_statement(Text, success) :-  ansi_format([fg(green), bold], 'Success', []), write_text(Text).
+write_statement(Text, failure) :-  ansi_format([fg(red), bold], 'Failure', []), write_text(Text).
+write_text(Text) :-  write(": "), ansi_format([italic], '~w\n', [Text]).
 
 last_element_of_list([X],R) :- R = X.
 last_element_of_list([_|Tail],R) :- last(Tail,R).

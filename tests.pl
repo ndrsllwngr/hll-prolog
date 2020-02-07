@@ -1,4 +1,5 @@
-:- use_module(clearance).
+:- use_module(clearance_base).
+:- use_module(clearance_api).
 :- use_module(test_framework).
 
 test_clearance :- 

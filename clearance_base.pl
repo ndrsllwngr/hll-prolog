@@ -1,15 +1,11 @@
 :- module(clearance_base, [
+    % Facts
+    user/1, userClearance/2, document/1, documentClearance/2,
+    % Predicates
     has_document_rights/2,
     has_user_rights/2,
     higher_or_equal/2,
     higher/2,
-    get_all_documents/1,
-    get_documents_of_clearance/2,
-    get_documents_accesible_with_clearance/2,
-    get_documents_accesible_by_user/2, 
-    get_all_users/1,
-    get_users_of_clearance_or_lower/2,
-    get_users_of_clearance/2,
     insert_document_with_clearance/3,
     insert_document/1,
     insert_document_clearance/2,
@@ -59,18 +55,6 @@ higher(C1, C2) :-  superior(C1, C2).
 higher(C1, C2) :-  superior(C1, X), higher(X, C2).
 
 % next_higher_level(C1, C2) :- superior(C1, C2).
-
-% ------- get data ------
-
-get_documents_accesible_by_user(User, R) :- findall(Document, (documentClearance(Document, DocumentClearance), has_document_rights(User, DocumentClearance)), R).
-
-get_all_documents(R) :- findall(Document, document(Document), R).
-get_documents_of_clearance(Clearance, R) :- findall(Document,(document(Document),documentClearance(Document,Clearance)),R).
-get_documents_accesible_with_clearance(Clearance, R) :- findall(Document, (documentClearance(Document, DocumentClearance), higher_or_equal(Clearance, DocumentClearance)), R).
-
-get_all_users(R) :- findall(U, user(U), R).
-get_users_of_clearance_or_lower(Clearance, R) :- findall(User, (userClearance(User, UserClearance), higher_or_equal(Clearance, UserClearance)), R).
-get_users_of_clearance(Clearance, R) :- findall(User, (user(User), userClearance(User, Clearance)), R).
 
 % ------- update datamodel basic ------
 

@@ -1,5 +1,5 @@
 :- use_module(init_knowledge_base).
-% :- use_module(api).
+:- use_module(rest_api).
 
 :- initialization main.
 

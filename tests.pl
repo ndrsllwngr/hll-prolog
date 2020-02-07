@@ -2,6 +2,34 @@
 :- use_module(clearance_api).
 :- use_module(test_framework).
 
+test_clearance_base :- 
+
+     "Clearance hirarchys should be able to be checked" should_evaluate (
+          higher(official,unclassified),
+          higher_or_equal(unclassified, unclassified),
+          higher_or_equal(topsecret, official)
+     ),
+     "Users should be insertable with a given clearance" should_evaluate (
+          insert_user_with_clearance(userTopSecret, topsecret, _),
+          insert_user_with_clearance(userSecret, secret, _)
+     ),
+     "Documents should be insertable with a given clearance" should_evaluate insert_document_with_clearance(doc, secret, _) to doc,
+     "Users should have access rights to documents of their level or lower" should_evaluate (
+          has_document_rights(userSecret,secret),
+          has_document_rights(userSecret,official),
+          \+ has_document_rights(userSecret,topsecret)
+     ),
+     "Non topsecret Users should have modification rights to users of lower levels" should_evaluate (
+          has_user_rights(userSecret,official),
+          \+ has_user_rights(userSecret,secret)
+     ),
+     "Topsecret Users should have modification rights to users of their level or lower" should_evaluate (
+          has_user_rights(userTopSecret,secret),
+          has_user_rights(userTopSecret,topsecret)
+     ),
+     "Users should be removable" should_evaluate remove_user_and_clearance(userSecret),
+     "Documents should be removable" should_evaluate remove_document_and_clearance(doc).
+
 test_clearance :- 
    "Create user" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,
 

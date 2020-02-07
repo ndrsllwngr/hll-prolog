@@ -2,17 +2,19 @@
 :- use_module(clearance_api).
 :- use_module(test_framework).
 
-test_clearance_base :- 
-     "Clearance hirarchys should be able to be checked" should_evaluate (
+test_clearance_base :-
+     "Clearance hierarchies should be able to be checked" should_evaluate (
           higher(official,unclassified),
           higher_or_equal(unclassified, unclassified),
           higher_or_equal(topsecret, official)
      ),
      "Users should be insertable with a given clearance" should_evaluate (
           insert_user_with_clearance(userTopSecret, topsecret, _),
-          insert_user_with_clearance(userSecret, secret, _)
+          insert_user_with_clearance(userSecret, secret, _),
+          insert_user_with_clearance(userUnclassified, unclassified, _)
+
      ),
-     "Documents should be insertable with a given clearance" should_evaluate insert_document_with_clearance(doc, secret, _) to doc,
+     "Documents should be insertable with a given clearance" should_evaluate insert_document_with_clearance(docSecret, secret, _) to docSecret,
      "Users should have access rights to documents of their level or lower" should_evaluate (
           has_document_rights(userSecret,secret),
           has_document_rights(userSecret,official),
@@ -26,8 +28,20 @@ test_clearance_base :-
           has_user_rights(userTopSecret,secret),
           has_user_rights(userTopSecret,topsecret)
      ),
-     "Users should be removable" should_evaluate remove_user_and_clearance(userSecret),
-     "Documents should be removable" should_evaluate remove_document_and_clearance(doc).
+     "Special permission logic should work" should_evaluate (
+          insert_document_with_clearance(docTopsecret, topsecret, _),
+          insert_special_permission(userSecret, docTopsecret),
+          insert_special_permission(unclassified, docTopsecret),
+          specialPermission(userSecret, docTopsecret)
+     ),
+     "Users should be removable & get relations removed throughoutly" should_evaluate (
+          remove_user_and_relations(userSecret),
+          \+ (userClearance(userSecret, secret); specialPermission(userSecret, docTopsecret))
+     ),
+     "Documents should be removable & get relations removed throughoutly" should_evaluate (
+          remove_document_and_relations(docTopsecret),
+          \+ (documentClearance(docTopsecret, topsecret), specialPermission(_, docTopsecret))
+     ).
 
 test_clearance_api :- 
    "Create user" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,

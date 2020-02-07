@@ -17,12 +17,9 @@ start_server(Port) :-
 
 % Routes
 % GET
-% User
-:- http_handler('/users', get_users_request, []).
-% Document
-:- http_handler('/', check_access_rights_request, []).
-:- http_handler('/documents_with_clearance', get_documents_accessible_with_clearance_request, []).
-:- http_handler('/documents_for_user', get_documents_accessible_by_user_request, []).
+:- http_handler('/health', health_request, []).
+:- http_handler('/document/get_accessible', get_documents_accessible_by_user_request, []).
+:- http_handler('/user/get_managable', get_users_managable_by_user_request, []).
 
 % POST
 % User
@@ -35,66 +32,45 @@ start_server(Port) :-
 :- http_handler('/document/remove_as_user', remove_document_as_user_request, []).
 
 
-% example: 
-% GET http://localhost:5004/?user=timo&document=panamaPapers
-% check_access_rights_request(Request) :-
-%     catch(
-%     http_parameters(Request,
-%        [
-%         user(User, [optional(false)]),
-%         document(Document, [optional(false)])
-%        ]),
-%     _E,
-%     fail),
-%     can_read(User,Document,R),
-%     prolog_to_json(R,JSONOut),
-%     reply_json(JSONOut).
-
+% GET
 
 % example: 
-% GET http://localhost:5004/documents_for_user?user=timo
+% GET http://localhost:5004/health
+health_request(_) :-
+    health(R),
+    prolog_to_json(R, JSONOut),
+    reply_json(JSONOut).
+
+% example: 
+% GET http://localhost:5004/document/get_accessible?access_user=director
 get_documents_accessible_by_user_request(Request) :-
     catch(
     http_parameters(Request,
        [
-        user(User, [optional(false)])
+        access_user(AccessUser, [optional(false)])
        ]),
     _E,
     fail),
-    get_documents_accesible_by_user(User,R),
-    prolog_to_json(R,JSONOut),
-    reply_json(JSONOut).
-
+    get_documents_accesible_by_user(AccessUser, R),
+    %prolog_to_json(R, JSONOut),
+    reply_json(R).
 
 % example: 
-% GET http://localhost:5004/documents_with_clearance?clearance=topsecret
-get_documents_accessible_with_clearance_request(Request) :-
+% GET http://localhost:5004/user/get_managable?access_user=director
+get_users_managable_by_user_request(Request) :-
     catch(
     http_parameters(Request,
        [
-        clearance(Clearance, [optional(false)])
+        access_user(AccessUser, [optional(false)])
        ]),
     _E,
     fail),
-    get_documents_accesible_with_clearance(Clearance,R),
-    prolog_to_json(R,JSONOut),
+    get_users_managable_by_user(AccessUser, R),
+    prolog_to_json(R, JSONOut),
     reply_json(JSONOut).
 
-% example: 
-% GET http://localhost:5004/users
-get_users_request(Request) :-
-    catch(
-    http_parameters(Request,[]),
-    _E,
-    fail),
-    get_all_users(R),
-    prolog_to_json(R,JSONOut),
-    reply_json(JSONOut).
-
-% -----
-% USERS
-% -----
-
+% POST
+% Users
 % example: 
 % POST http://localhost:5004/user/create_as_user
 % Content-Type: application/json
@@ -109,7 +85,10 @@ create_user_as_user_request(Request) :-
     atom_string(User, UserString),
     atom_string(Clearance, ClearanceString),
     atom_string(AccessUser, AccessUserString),
-    create_user_as_user(User, Clearance, AccessUser, R),  % ToDo handle false case
+    create_user_as_user(User, Clearance, AccessUser, Result) -> 
+    prolog_to_json(Result, JSONOut),
+    reply_json(JSONOut);
+    atom_string(R, "Could not create user"),
     prolog_to_json(R, JSONOut),
     reply_json(JSONOut).
 
@@ -127,8 +106,10 @@ update_user_clearance_as_user_request(Request) :-
     atom_string(User, UserString),
     atom_string(Clearance, ClearanceString),
     atom_string(AccessUser, AccessUserString),
-    update_user_clearance_as_user(User, Clearance, AccessUser), % ToDo handle result
-    prolog_to_json(R, JSONOut),
+    update_user_clearance_as_user(User, Clearance, AccessUser) ->
+    prolog_to_json(success, JSONOut),
+    reply_json(JSONOut);
+    prolog_to_json(failure, JSONOut),
     reply_json(JSONOut).
 
 % example: 
@@ -140,11 +121,13 @@ update_user_clearance_as_user_request(Request) :-
 % }
 remove_user_as_user_request(Request) :-
     member(method(post), Request), !,
-    http_read_json_dict(Request, _{user: DocumentString, access_user: AccessUserString}),
+    http_read_json_dict(Request, _{user: UserString, access_user: AccessUserString}),
     atom_string(User, UserString),
     atom_string(AccessUser, AccessUserString),
-    remove_user_as_user(Document, AccessUser), % ToDo handle result
-    prolog_to_json(R, JSONOut),
+    remove_user_as_user(User, AccessUser) ->
+    prolog_to_json(success, JSONOut),
+    reply_json(JSONOut);
+    prolog_to_json(failure, JSONOut),
     reply_json(JSONOut).
 
 % ---------
@@ -165,7 +148,10 @@ create_document_as_user_request(Request) :-
     atom_string(Document, DocumentString),
     atom_string(Clearance, ClearanceString),
     atom_string(AccessUser, AccessUserString),
-    create_document_as_user(Document, Clearance, AccessUser, R), % ToDo handle false case
+    create_document_as_user(Document, Clearance, AccessUser, Result) -> 
+    prolog_to_json(Result, JSONOut),
+    reply_json(JSONOut);
+    atom_string(R, "Could not create document"),
     prolog_to_json(R, JSONOut),
     reply_json(JSONOut).
 
@@ -183,8 +169,10 @@ update_document_clearance_as_user_request(Request) :-
     atom_string(Document, DocumentString),
     atom_string(Clearance, ClearanceString),
     atom_string(AccessUser, AccessUserString),
-    update_document_clearance_as_user(Document, Clearance, AccessUser), % ToDo handle result
-    prolog_to_json(R, JSONOut),
+    update_document_clearance_as_user(Document, Clearance, AccessUser) ->
+    prolog_to_json(success, JSONOut),
+    reply_json(JSONOut);
+    prolog_to_json(failure, JSONOut),
     reply_json(JSONOut).
 
 % example: 
@@ -198,8 +186,9 @@ remove_document_as_user_request(Request) :-
     member(method(post), Request), !,
     http_read_json_dict(Request, _{document: DocumentString, access_user: AccessUserString}),
     atom_string(Document, DocumentString),
-    atom_string(Clearance, ClearanceString),
     atom_string(AccessUser, AccessUserString),
-    remove_document_as_user(Document, AccessUser), % ToDo handle result
-    prolog_to_json(R, JSONOut),
+    remove_document_as_user(Document, AccessUser) ->
+    prolog_to_json(success, JSONOut),
+    reply_json(JSONOut);
+    prolog_to_json(failure, JSONOut),
     reply_json(JSONOut).

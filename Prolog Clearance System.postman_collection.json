@@ -1,0 +1,288 @@
+{
+	"info": {
+		"_postman_id": "e405c473-c70f-4b2c-b7e2-ceafc03879b3",
+		"name": "Prolog Clearance System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5004/health",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user/get_managable?access_user=director",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5004/user/get_managable?access_user=director",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"user",
+						"get_managable"
+					],
+					"query": [
+						{
+							"key": "access_user",
+							"value": "director"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "document/get_accessible?access_user=director",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5004/document/get_accessible?access_user=director",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"document",
+						"get_accessible"
+					],
+					"query": [
+						{
+							"key": "access_user",
+							"value": "director"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "document/create_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"document\": \"wikileaks\",\n\t\"clearance\": \"official\",\n\t\"access_user\": \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/document/create_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"document",
+						"create_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "document/update_clearance_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"document\": \"wikileaks\",\n\t\"clearance\": \"secret\",\n\t\"access_user\": \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/document/update_clearance_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"document",
+						"update_clearance_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "document/remove_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"document\": \"wikileaks\",\n\t\"access_user\": \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/document/remove_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"document",
+						"remove_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user/create_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\": \"snowden\",\n\t\"clearance\": \"official\",\n\t\"access_user\": \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/user/create_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"user",
+						"create_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user/update_clearance_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\": \"snowden\",\n\t\"clearance\": \"secret\",\n\t\"access_user\": \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/user/update_clearance_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"user",
+						"update_clearance_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user/remove_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\": \"snowden\",\n\t\"access_user\": \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/user/remove_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"user",
+						"remove_as_user"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -1,4 +1,7 @@
 :- module(clearance_api, [
+    health/1,
+    get_documents_accesible_by_user/2,
+    get_users_managable_by_user/2,
     create_user_as_user/4,
     create_document_as_user/4,
     remove_user_as_user/2,
@@ -10,13 +13,19 @@
 :- use_module(library(lists)).
 :- use_module(clearance_base).
 
+health(R) :- atom_string(R, "Prolog Clearance System (PCS) API is healthy").
+
+get_documents_accesible_by_user(AccessUser, R) :- findall(Document, (documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance)), R).
+get_users_managable_by_user(AccessUser, R) :- findall(User, (userClearance(User, UserClearance), has_document_rights(AccessUser, UserClearance)), R).
+
+
 create_user_as_user(User, Clearance, AccessUser, R) :-      has_user_rights(AccessUser, Clearance),
                                                             insert_user_with_clearance(User, Clearance, CreatedUser),
                                                             R = CreatedUser.
                                                             
 create_document_as_user(Document, Clearance, AccessUser, R) :-  has_document_rights(AccessUser, Clearance),
-                                                                insert_document_with_clearance(Document, Clearance, Document),
-                                                                R = Document.
+                                                                insert_document_with_clearance(Document, Clearance, CreatedDocument),
+                                                                R = CreatedDocument.
 
 update_user_clearance_as_user(User, Clearance, AccessUser) :-   has_user_rights(AccessUser, Clearance),
                                                                 remove_user_clearance(User),
@@ -35,15 +44,3 @@ remove_document_as_user(Document, AccessUser) :-    documentClearance(Document, 
                                                     remove_document(Document).
 
 % ToDo nested interaction
-
-
-
-% ToDo Api results
-% can_read(User, Document, true) :- can_read(User, Document).
-% can_read(_, _, false) :- !.
-% remove_user_and_clearance(User, true) :- remove_user_and_clearance(User).
-% remove_user_and_clearance(_, _, false) :- !.
-% create_user_with_user(UserCreate, Clearance, UserAccess, true) :- create_user_with_user(UserCreate, Clearance, UserAccess).
-% create_user_with_user(_, _, _, false) :- !.
-% create_document_with_user(Document, Clearance, UserAccess, true) :- create_document_with_user(Document, Clearance, UserAccess).
-% create_document_with_user(_, _, _, false) :- !.

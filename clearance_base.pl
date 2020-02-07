@@ -1,6 +1,7 @@
 :- module(clearance_base, [
     % Facts
     user/1, userClearance/2, document/1, documentClearance/2,
+    clearanceLevel/1,
     % Predicates
     has_document_rights/2,
     has_user_rights/2,

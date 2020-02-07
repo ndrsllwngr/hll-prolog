@@ -4,5 +4,5 @@
 :- initialization main.
 
 main :-
-    initialize_knowledge_base.
-    % start_server(5004).
+    initialize_knowledge_base,
+    start_server(5004).

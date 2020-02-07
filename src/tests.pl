@@ -3,7 +3,6 @@
 :- use_module(test_framework).
 
 test_clearance_base :- 
-
      "Clearance hirarchys should be able to be checked" should_evaluate (
           higher(official,unclassified),
           higher_or_equal(unclassified, unclassified),
@@ -30,13 +29,11 @@ test_clearance_base :-
      "Users should be removable" should_evaluate remove_user_and_clearance(userSecret),
      "Documents should be removable" should_evaluate remove_document_and_clearance(doc).
 
-test_clearance :- 
+test_clearance_api :- 
    "Create user" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,
 
    "Director user should be able to create another user on lower level" should_evaluate create_user_as_user(user, official, Director, OfficialUser) to user,
    "Director user should be able to create another user on his level" should_evaluate create_user_as_user(coDirector, topsecret, Director, _) to coDirector,
-
-   "1 should equal to 2" should_evaluate (1==2),
 
    "Lower than topsecret user should be able to create a user on a lower level" should_evaluate create_user_as_user(user, unclassified, OfficialUser, _) to user,
    "Lower than topsecret user should not be able to create a user on his or a higher level" should_not_evaluate (
@@ -62,6 +59,23 @@ test_clearance :-
 
 :- style_check(-singleton).
 test_flex :- 
-     "Term va.riables of create_user_as_user(User, Clearance, AccessUser, R) should match [User, Clearance, AccessUser, R]" should_evaluate term_variables(create_user_as_user(User, Clearance, AccessUser, R),_) to [User, Clearance, AccessUser, R],
+     "1 should equal to 2" should_evaluate (1==2),
+     "Term variables of create_user_as_user(User, Clearance, AccessUser, R) should match [User, Clearance, AccessUser, R]" should_evaluate term_variables(create_user_as_user(User, Clearance, AccessUser, R),_) to [User, Clearance, AccessUser, R],
      "Term variables of create_user_as_user(User, Clearance, AccessUser, R) should match [User, Clearance, AccessUser, R] even if named differently in call" should_evaluate term_variables(create_user_as_user(U, C, A, _),_) to [User, Clearance, AccessUser, R],
      "Term variables of term_variables(Term, L) should match [Term, L]" should_evaluate term_variables(term_variables(_,_),_) to [Term, L].
+
+test_test_framework :-
+     "should_equal should work for atoms, numerics, strings and terms" should_evaluate (
+          should_equal(1, 1),
+          \+ should_equal(1, 2),
+          should_equal(test, test),
+          should_equal("test", "test"),
+          should_equal((1==1), (1==1))
+     ),
+     "should_equal should work for lists in any order" should_evaluate (
+          should_equal([1,2,3], [3,2,1]),
+          should_equal([1,2,3], [1,2,3]),
+          \+ should_equal([1,1,2,3], [1,2,3])
+     ),
+     "last_element_of_list should return the last element of the list" should_evaluate last_element_of_list([1,2,3], _) to 3.
+

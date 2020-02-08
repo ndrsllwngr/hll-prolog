@@ -11,13 +11,14 @@
 
 :- use_module(clearance_api).
 
-% Webserver
+% ------- Web Server --------
 start_server(Port) :-
     http_server(http_dispatch, [port(Port)]).
 
-% Routes
+% ------- Routes --------
 % GET
 :- http_handler('/health', health_request, []).
+:- http_handler('/document', get_document_as_user_request, []).
 :- http_handler('/document/get_accessible', get_documents_accessible_by_user_request, []).
 :- http_handler('/user/get_managable', get_users_managable_by_user_request, []).
 
@@ -33,8 +34,7 @@ start_server(Port) :-
 :- http_handler('/document/grant_special_permission_as_user', grant_special_permission_as_user_request, []).
 :- http_handler('/document/retract_special_permission_as_user', retract_special_permission_as_user_request, []).
 
-
-
+% ------- Handle requests --------
 % GET
 
 % example: 
@@ -42,6 +42,22 @@ start_server(Port) :-
 health_request(_) :-
     health(R),
     prolog_to_json(R, JSONOut),
+    reply_json(JSONOut).
+
+% example: 
+% GET http://localhost:5004/document?document=nsa_files&access_user=director
+get_document_as_user_request(Request) :-
+    catch(
+    http_parameters(Request,
+       [
+        document(Document, [optional(false)]),
+        access_user(AccessUser, [optional(false)])
+       ]),
+    _E,
+    fail),
+    get_document(Document, AccessUser, R) ->
+    reply_json(R);
+    prolog_to_json(failure, JSONOut),
     reply_json(JSONOut).
 
 % example: 
@@ -55,7 +71,6 @@ get_documents_accessible_by_user_request(Request) :-
     _E,
     fail),
     get_documents_accesible_by_user(AccessUser, R),
-    %prolog_to_json(R, JSONOut),
     reply_json(R).
 
 % example: 
@@ -74,6 +89,7 @@ get_users_managable_by_user_request(Request) :-
 
 % POST
 % Users
+
 % example: 
 % POST http://localhost:5004/user/create_as_user
 % Content-Type: application/json
@@ -133,9 +149,8 @@ remove_user_as_user_request(Request) :-
     prolog_to_json(failure, JSONOut),
     reply_json(JSONOut).
 
-% ---------
-% DOCUMENTS
-% ---------
+
+% Documents
 
 % example: 
 % POST http://localhost:5004/document/create_as_user

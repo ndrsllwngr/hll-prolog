@@ -2,7 +2,7 @@
     % Facts
     user/1, userClearance/2, document/1, documentClearance/2,
     clearanceLevel/1,
-    % Predicates
+    % Rules
     has_document_rights/2,
     specialPermission/2,
     has_user_rights/2,
@@ -28,8 +28,7 @@
 
 :- use_module(library(lists)).
 
-% Facts
-
+% ------- Facts --------
 clearanceLevel(topsecret).
 clearanceLevel(secret).
 clearanceLevel(confidential).
@@ -45,7 +44,7 @@ superior(official,unclassified).
 
 :- dynamic user/1, userClearance/2, document/1, documentClearance/2, specialPermission/2.
 
-% ------- rules ------
+% ------- Rules ------
 
 % Create/modify/delete Documents up to my clearance level
 has_document_rights(User, Clearance) :- userClearance(User, UserClearance), higher_or_equal(UserClearance, Clearance).
@@ -60,8 +59,6 @@ higher(C1, C2) :-  superior(C1, X), higher(X, C2).
 
 get_all_higher_clearances(Clearance, R) :- superior(C, Clearance) -> get_all_higher_clearances(C, R1), R = [C | R1]; R = [].
 next_higher_level(C1, C2) :- superior(C1, C2).
-
-% ------- update datamodel basic ------
 
 insert_document_with_clearance(Document, Clearance, R) :-   remove_document_and_relations(Document),
                                                             insert_document(Document), 

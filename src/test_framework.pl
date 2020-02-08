@@ -17,7 +17,6 @@
 :- op(300, xfx, should_not_evaluate).
 :- op(400, xfx, to).
 
-
 should_equal(X, Y) :- X = Y.
 should_equal([H1|T1], [H2|T2]) :-   sort(0, @=<, [H1|T1], S1),
                                     sort(0, @=<, [H2|T2], S2),

@@ -14,7 +14,6 @@ test_clearance_base :-
           insert_user_with_clearance(userTopSecret, topsecret, _),
           insert_user_with_clearance(userSecret, secret, _),
           insert_user_with_clearance(userUnclassified, unclassified, _)
-
      ),
      "Documents should be insertable with a given clearance" should_evaluate insert_document_with_clearance(docSecret, secret, _) to docSecret,
      "Users should have access rights to documents of their level or lower" should_evaluate (
@@ -60,70 +59,69 @@ test_clearance_base :-
                specialPermission(docSP1, userSP1);
                specialPermission(docSP1, userSP2))
      ),
+     % Clean Database
      clean_database.
 
-% TODO remove dependency hell
 test_clearance_api :- 
      "Create user" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,
-     % USER
-     "Director user should be able to create another user on lower level" should_evaluate create_user_as_user(userOfficial, official, Director, OfficialUser) to userOfficial,
+     % User
+     "Director user should be able to create another user on lower level" should_evaluate create_user_as_user(userRestricted, restricted, Director, RestrictedUser) to userRestricted,
      "Director user should be able to create another user on his level" should_evaluate create_user_as_user(coDirector, topsecret, Director, CoDirector) to coDirector,
 
-     "Lower than topsecret user should be able to create a user on a lower level" should_evaluate create_user_as_user(userUnclassified, unclassified, OfficialUser, UnclassifiedUser) to userUnclassified,
+     "Lower than topsecret user should be able to create a user on a lower level" should_evaluate create_user_as_user(userUnclassified, unclassified, RestrictedUser, UnclassifiedUser) to userUnclassified,
      "Lower than topsecret user should not be able to create a user on his or a higher level" should_not_evaluate (
-          % Maybe mit mapList alle
-          create_user_as_user(_, restricted, OfficialUser, _);
-          create_user_as_user(_, topsecret, OfficialUser, _)
-     ),
-     % TODO test more throughoutly
-     "User should be able to update clearance of another user of a lower level" should_evaluate (
-          create_user_as_user(promotedUser, official, Director, PromotedUser),
-          update_user_clearance_as_user(OfficialUser, confidential, Director)
+          create_user_as_user(_, restricted, RestrictedUser, _);
+          create_user_as_user(_, topsecret, RestrictedUser, _)
      ),
      "Director should be able to update clearance of a user to his level" should_evaluate (
-          create_user_as_user(promotedUser, official, Director, PromotedUser),
-          update_user_clearance_as_user(PromotedUser, topsecret, Director)
-     ),
-     "User should not be able to update clearance of another to his or higher a level" should_not_evaluate (
-          create_user_as_user(promotedUser, unclassified, OfficialUser, PromotedUser),
-          \+ (update_user_clearance_as_user(PromotedUser, official, OfficialUser); update_user_clearance_as_user(PromotedUser, secret, OfficialUser))
+          create_user_as_user(userPromoted1, official, Director, PromotedUser1),
+          update_user_clearance_as_user(PromotedUser1, topsecret, Director)
      ),
      "Director should be able to remove a user on his level" should_evaluate (
-          remove_user_as_user(CoDirector, Director)
+          remove_user_as_user(CoDirector, Director),
+          remove_user_as_user(PromotedUser1, Director)
+     ),
+     "User should be able to update clearance of another user to lower levels than his" should_evaluate (
+          create_user_as_user(userPromoted2, unclassified, RestrictedUser, PromotedUser2),
+          update_user_clearance_as_user(PromotedUser2, official, RestrictedUser),
+          \+ ( update_user_clearance_as_user(PromotedUser2, secret, RestrictedUser);
+               update_user_clearance_as_user(RestrictedUser, secret, RestrictedUser);
+               update_user_clearance_as_user(Director, unclassified, RestrictedUser))
      ),
      "User should only be able to remove a user on a lower level" should_evaluate (
-          remove_user_as_user(UnclassifiedUser, OfficialUser),
-          \+ (remove_user_as_user(Director, OfficialUser))
+          remove_user_as_user(UnclassifiedUser, RestrictedUser),
+          \+ remove_user_as_user(Director, RestrictedUser)
      ),
-     % DOCUMENTS
+     % Documents
      "User should be able to create Documents on his or lower level" should_evaluate (
-          create_document_as_user(docOfficial, official, OfficialUser, DocumentOfficial),
-          create_document_as_user(docRestricted, restricted, OfficialUser, DocumentRestricted),
+          create_document_as_user(docOfficial, official, RestrictedUser, DocumentOfficial),
+          create_document_as_user(docRestricted, restricted, RestrictedUser, DocumentRestricted),
           create_document_as_user(docTopsecret, topsecret, Director, DocumentTopsecret),
-          \+ (create_document_as_user(docFail, secret, OfficialUser, _))
+          \+ create_document_as_user(docFail, secret, RestrictedUser, _)
      ),
      "User should be able to read documents up to his level" should_evaluate (
-          get_document(DocumentRestricted, OfficialUser, _),
-          get_document(DocumentOfficial, OfficialUser, _)
+          get_document(DocumentRestricted, RestrictedUser, _),
+          get_document(DocumentOfficial, RestrictedUser, _)
      ),
      "User should be able to update clearance of Documents up to his level" should_evaluate (
-          update_document_clearance_as_user(DocumentRestricted, official, OfficialUser),
-          \+ (update_document_clearance_as_user(DocumentRestricted, secret, OfficialUser))
+          update_document_clearance_as_user(DocumentOfficial, restricted, RestrictedUser),
+          \+ update_document_clearance_as_user(DocumentRestricted, secret, RestrictedUser)
      ),
      "User should be able to remove Documents up to his level" should_evaluate (
-          remove_document_as_user(DocumentRestricted, OfficialUser),
-          remove_document_as_user(DocumentOfficial, OfficialUser),
-          \+ (remove_document_as_user(DocumentTopsecret, OfficialUser))
+          remove_document_as_user(DocumentRestricted, RestrictedUser),
+          remove_document_as_user(DocumentOfficial, RestrictedUser),
+          \+ remove_document_as_user(DocumentTopsecret, RestrictedUser)
      ),
      % Special Permissions
      "Special permissions should be grantable and work" should_evaluate (
-          grant_special_permission_as_user(OfficialUser, DocumentTopsecret, Director),
-          get_document(DocumentTopsecret, OfficialUser, _),
-          \+ (update_document_clearance_as_user(DocumentTopsecret, unclassified, OfficialUser); remove_document_as_user(DocumentTopsecret, OfficialUser)),
-          retract_special_permission_as_user(OfficialUser, DocumentTopsecret, Director),
-          \+ get_document(DocumentTopsecret, OfficialUser, _)
-     ),
-     clean_database.
+          grant_special_permission_as_user(RestrictedUser, DocumentTopsecret, Director),
+          get_document(DocumentTopsecret, RestrictedUser, _),
+          \+ (update_document_clearance_as_user(DocumentTopsecret, unclassified, RestrictedUser); remove_document_as_user(DocumentTopsecret, RestrictedUser)),
+          retract_special_permission_as_user(RestrictedUser, DocumentTopsecret, Director),
+          \+ get_document(DocumentTopsecret, RestrictedUser, _)
+     ).
+     % Clean Database
+     %clean_database.
 
 test_test_framework :-
      "should_equal should work for atoms, numerics, strings and terms" should_evaluate (

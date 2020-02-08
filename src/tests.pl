@@ -1,6 +1,7 @@
 :- use_module(clearance_base).
 :- use_module(clearance_api).
 :- use_module(test_framework).
+:- use_module(database_util).
 
 test_clearance_base :-
      "Clearance hierarchies should be able to be checked" should_evaluate (
@@ -58,7 +59,8 @@ test_clearance_base :-
           \+ ( documentClearance(docSP1, topsecret);
                specialPermission(docSP1, userSP1);
                specialPermission(docSP1, userSP2))
-     ).
+     ),
+     clean_database.
 
 % TODO remove dependency hell
 test_clearance_api :- 
@@ -120,17 +122,8 @@ test_clearance_api :-
           \+ (update_document_clearance_as_user(DocumentTopsecret, unclassified, OfficialUser); remove_document_as_user(DocumentTopsecret, OfficialUser)),
           retract_special_permission_as_user(OfficialUser, DocumentTopsecret, Director),
           \+ get_document(DocumentTopsecret, OfficialUser, _)
-     ).
-
-   % "Lower than topsecret user should not be able to create a user on his level" should_not_evaluate create_user_as_user(_, restricted, RestrictedUser, _),
-   % "Lower than topsecret user should not be able to create a user on his level" should_not_evaluate create_user_as_user(_, restricted, RestrictedUser, _),
-
-:- style_check(-singleton).
-test_flex :- 
-     "1 should equal to 2" should_evaluate (1==2),
-     "Term variables of create_user_as_user(User, Clearance, AccessUser, R) should match [User, Clearance, AccessUser, R]" should_evaluate term_variables(create_user_as_user(User, Clearance, AccessUser, R),_) to [User, Clearance, AccessUser, R],
-     "Term variables of create_user_as_user(User, Clearance, AccessUser, R) should match [User, Clearance, AccessUser, R] even if named differently in call" should_evaluate term_variables(create_user_as_user(U, C, A, _),_) to [User, Clearance, AccessUser, R],
-     "Term variables of term_variables(Term, L) should match [Term, L]" should_evaluate term_variables(term_variables(_,_),_) to [Term, L].
+     ),
+     clean_database.
 
 test_test_framework :-
      "should_equal should work for atoms, numerics, strings and terms" should_evaluate (
@@ -147,4 +140,19 @@ test_test_framework :-
      ),
      "last_element_of_list should return the last element of the list" should_evaluate last_element_of_list([1,2,3], _) to 3.
 
+:- style_check(-singleton).
+test_examples :- 
+     "1 should equal to 2" should_evaluate (1==2),
+     "Term variables of create_user_as_user(User, Clearance, AccessUser, R) should match [User, Clearance, AccessUser, R]" should_evaluate term_variables(create_user_as_user(User, Clearance, AccessUser, R),_) to [User, Clearance, AccessUser, R],
+     "Term variables of create_user_as_user(User, Clearance, AccessUser, R) should match [User, Clearance, AccessUser, R] even if named differently in call" should_evaluate term_variables(create_user_as_user(U, C, A, _),_) to [User, Clearance, AccessUser, R],
+     "Term variables of term_variables(Term, L) should match [Term, L]" should_evaluate term_variables(term_variables(_,_),_) to [Term, L].
 
+test_all :-
+     write("\ntest_clearance_base:\n---\n"),
+     test_clearance_base,
+     write("\n\ntest_clearance_api:\n---\n"),
+     test_clearance_api,
+     write("\n\ntest_test_framework:\n---\n"),
+     test_test_framework,
+     write("\n\ntest_examples\n---\n"),
+     test_examples.

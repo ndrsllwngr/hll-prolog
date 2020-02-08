@@ -43,8 +43,6 @@ superior(confidential,restricted).
 superior(restricted,official).
 superior(official,unclassified).
 
-% ToDo: specialPermission(User, Document).
-
 :- dynamic user/1, userClearance/2, document/1, documentClearance/2, specialPermission/2.
 
 % ------- rules ------

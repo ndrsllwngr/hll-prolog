@@ -192,7 +192,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"user\": \"snowden\",\n\t\"clearance\": \"official\",\n\t\"access_user\": \"director\"\n}",
+					"raw": "{\n\t\"user\": \"press\",\n\t\"clearance\": \"official\",\n\t\"access_user\": \"director\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -278,6 +278,76 @@
 					"path": [
 						"user",
 						"remove_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "document/grant_special_permission_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\" : \"press\", \n\t\"document\" : \"wikileaks\",\n\t\"access_user\" : \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/document/grant_special_permission_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"document",
+						"grant_special_permission_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "document/retract_special_permission_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\" : \"press\", \n\t\"document\" : \"wikileaks\",\n\t\"access_user\" : \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/document/retract_special_permission_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"document",
+						"retract_special_permission_as_user"
 					]
 				}
 			},

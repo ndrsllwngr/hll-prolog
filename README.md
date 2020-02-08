@@ -13,15 +13,23 @@ tbd
 
 ### Requirements
 
-tbd
+- SWI Prolog
+```bash
+$ brew install swipl
+```
 
 ## Usage
 
-tbd
+### Run API
+```bash
+$ swipl -s src/main.pl
+```
 
-### References
-
-tbd
+### Run tests
+```bash
+$ swipl -s src/tests.pl
+?- test_all.
+```
 
 ## Contributors (Group ATA)
 

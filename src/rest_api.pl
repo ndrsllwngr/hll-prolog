@@ -30,6 +30,9 @@ start_server(Port) :-
 :- http_handler('/document/create_as_user', create_document_as_user_request, []).
 :- http_handler('/document/update_clearance_as_user', update_document_clearance_as_user_request, []).
 :- http_handler('/document/remove_as_user', remove_document_as_user_request, []).
+:- http_handler('/document/grant_special_permission_as_user', grant_special_permission_as_user_request, []).
+:- http_handler('/document/retract_special_permission_as_user', retract_special_permission_as_user_request, []).
+
 
 
 % GET
@@ -188,6 +191,46 @@ remove_document_as_user_request(Request) :-
     atom_string(Document, DocumentString),
     atom_string(AccessUser, AccessUserString),
     remove_document_as_user(Document, AccessUser) ->
+    prolog_to_json(success, JSONOut),
+    reply_json(JSONOut);
+    prolog_to_json(failure, JSONOut),
+    reply_json(JSONOut).
+
+% example: 
+% POST http://localhost:5004/document/grant_special_permission_as_user
+% Content-Type: application/json
+% { 
+%   "user" : "press",
+% 	"document" : "nsa_files",
+%   "access_user" : "snowden"
+% }
+grant_special_permission_as_user_request(Request) :-
+    member(method(post), Request), !,
+    http_read_json_dict(Request, _{user: UserString, document: DocumentString, access_user: AccessUserString}),
+    atom_string(User, UserString),
+    atom_string(Document, DocumentString),
+    atom_string(AccessUser, AccessUserString),
+    grant_special_permission_as_user(User, Document, AccessUser) ->
+    prolog_to_json(success, JSONOut),
+    reply_json(JSONOut);
+    prolog_to_json(failure, JSONOut),
+    reply_json(JSONOut).
+
+% example: 
+% POST http://localhost:5004/document/retract_special_permission_as_user
+% Content-Type: application/json
+% {
+%   "user" : "press", 
+% 	"document" : "nsa_files",
+%   "access_user" : "snowden"
+% }
+retract_special_permission_as_user_request(Request) :-
+    member(method(post), Request), !,
+    http_read_json_dict(Request, _{user: UserString, document: DocumentString, access_user: AccessUserString}),
+    atom_string(User, UserString),
+    atom_string(Document, DocumentString),
+    atom_string(AccessUser, AccessUserString),
+    retract_special_permission_as_user(User, Document, AccessUser) ->
     prolog_to_json(success, JSONOut),
     reply_json(JSONOut);
     prolog_to_json(failure, JSONOut),

@@ -73,9 +73,9 @@ insert_document_with_clearance(Document, Clearance, R) :-   remove_document_and_
 insert_document(Document) :- asserta(document(Document)).
 insert_document_clearance(Document, Clearance) :- asserta(documentClearance(Document, Clearance)).
 
-remove_document_and_relations(Document) :- remove_document(Document),
-                                        remove_document_clearance(Document),
-                                        remove_special_permission(_, Document).
+remove_document_and_relations(Document) :-  remove_document_clearance(Document),
+                                            remove_special_permission(_, Document),
+                                            remove_document(Document).
 
 remove_document(Document) :- retractall(document(Document)).
 remove_document_clearance(Document) :- retractall(documentClearance(Document,_)).
@@ -88,12 +88,12 @@ insert_user_with_clearance(User, Clearance, R) :-   remove_user_and_relations(Us
 insert_user(User) :- asserta(user(User)).
 insert_user_clearance(User, Clearance) :- asserta(userClearance(User, Clearance)).
 
-remove_user_and_relations(User) :-     remove_user(User),
-                                    remove_user_clearance(User),
-                                    remove_special_permission(User, _).
+remove_user_and_relations(User) :-  remove_user_clearance(User),
+                                    remove_special_permission(User, _),
+                                    remove_user(User).
                                 
 remove_user(User) :- retractall(user(User)).
 remove_user_clearance(User) :- retractall(userClearance(User, _)).
 
-insert_special_permission(User, Document) :- asserta(specialPermission(User, Document)).
-remove_special_permission(User, Document) :- retractall(specialPermission(_, Document)). % TODO correct?
+insert_special_permission(User, Document) :- asserta(specialPermission(Document, User)).
+remove_special_permission(User, Document) :- retractall(specialPermission(Document, User)).

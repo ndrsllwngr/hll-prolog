@@ -9,8 +9,8 @@
     remove_document_as_user/2,
     update_user_clearance_as_user/3,
     update_document_clearance_as_user/3,
-    grant_special_permission_as_user/3,
-    retract_special_pemission_as_user/3
+    retract_special_permission_as_user/3,
+    grant_special_permission_as_user/3
 ]).
 
 :- use_module(library(lists)).
@@ -19,9 +19,9 @@
 health(R) :- atom_string(R, "Prolog Clearance System (PCS) API is healthy").
 
 get_document(Document, AccessUser, R) :- documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance), R = Document, !.
-get_document(Document, AccessUser, R) :- specialPermission(AccessUser, Document), R = Document.
+get_document(Document, AccessUser, R) :- specialPermission(Document, AccessUser), R = Document.
 
-get_documents_accesible_by_user(AccessUser, R) :- findall(Document, ((documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance)); specialPermission(AccessUser, Document)), R).
+get_documents_accesible_by_user(AccessUser, R) :- findall(Document, ((documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance)); specialPermission(Document, AccessUser)), R).
 get_users_managable_by_user(AccessUser, R) :- findall(User, (userClearance(User, UserClearance), has_document_rights(AccessUser, UserClearance)), R).
 
 
@@ -58,6 +58,6 @@ grant_special_permission_as_user(User, Document, AccessUser) :- documentClearanc
                                                                 has_document_rights(AccessUser, DocumentClearance),
                                                                 insert_special_permission(User, Document).
 
-retract_special_pemission_as_user(User, Document, AccessUser) :-    documentClearance(Document, DocumentClearance),
+retract_special_permission_as_user(User, Document, AccessUser) :-    documentClearance(Document, DocumentClearance),
                                                                     has_document_rights(AccessUser, DocumentClearance),
                                                                     remove_special_permission(User, Document).

@@ -30,18 +30,34 @@ test_clearance_base :-
           has_user_rights(userTopSecret,topsecret)
      ),
      "Special permission logic should work" should_evaluate (
-          insert_document_with_clearance(docTopsecret, topsecret, _),
-          insert_special_permission(userSecret, docTopsecret),
-          insert_special_permission(unclassified, docTopsecret),
-          specialPermission(userSecret, docTopsecret)
+          insert_user_with_clearance(userSP1, official, _),
+          insert_user_with_clearance(userSP2, official, _),
+
+          insert_document_with_clearance(docSP1, topsecret, _),
+          insert_document_with_clearance(docSP2, topsecret, _),
+
+          insert_special_permission(userSP1, docSP1),
+          insert_special_permission(userSP1, docSP2),
+          insert_special_permission(userSP2, docSP1),
+
+          specialPermission(docSP1, userSP1),
+          specialPermission(docSP2, userSP1),
+          specialPermission(docSP1, userSP2)
      ),
      "Users should be removable & get relations removed throughoutly" should_evaluate (
-          remove_user_and_relations(userSecret),
-          \+ (userClearance(userSecret, secret); specialPermission(userSecret, docTopsecret))
+          remove_user_and_relations(userSP1),
+          \+ ( userClearance(userSP1, secret);
+               specialPermission(docSP1, userSP1);
+               specialPermission(docSP2, userSP1)),
+          specialPermission(docSP1, userSP2)
      ),
      "Documents should be removable & get relations removed throughoutly" should_evaluate (
-          remove_document_and_relations(docTopsecret),
-          \+ (documentClearance(docTopsecret, topsecret), specialPermission(_, docTopsecret))
+          insert_user_with_clearance(userSP1, official, _),
+          insert_special_permission(userSP1, docSP1),
+          remove_document_and_relations(docSP1),
+          \+ ( documentClearance(docSP1, topsecret);
+               specialPermission(docSP1, userSP1);
+               specialPermission(docSP1, userSP2))
      ).
 
 % TODO remove dependency hell
@@ -101,7 +117,9 @@ test_clearance_api :-
      "Special permissions should be grantable and work" should_evaluate (
           grant_special_permission_as_user(OfficialUser, DocumentTopsecret, Director),
           get_document(DocumentTopsecret, OfficialUser, _),
-          \+ (update_document_clearance_as_user(DocumentTopsecret, unclassified, OfficialUser); remove_document_as_user(DocumentTopsecret, OfficialUser))
+          \+ (update_document_clearance_as_user(DocumentTopsecret, unclassified, OfficialUser); remove_document_as_user(DocumentTopsecret, OfficialUser)),
+          retract_special_permission_as_user(OfficialUser, DocumentTopsecret, Director),
+          \+ get_document(DocumentTopsecret, OfficialUser, _)
      ).
 
    % "Lower than topsecret user should not be able to create a user on his level" should_not_evaluate create_user_as_user(_, restricted, RestrictedUser, _),

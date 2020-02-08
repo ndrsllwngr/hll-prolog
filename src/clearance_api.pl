@@ -18,7 +18,9 @@
 
 health(R) :- atom_string(R, "Prolog Clearance System (PCS) API is healthy").
 
-get_document(AccessUser, Document, R) :- ( documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance) ); specialPermission(AccessUser, Document), R = Document.
+get_document(Document, AccessUser, R) :- documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance), R = Document, !.
+get_document(Document, AccessUser, R) :- specialPermission(AccessUser, Document), R = Document.
+
 get_documents_accesible_by_user(AccessUser, R) :- findall(Document, ((documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance)); specialPermission(AccessUser, Document)), R).
 get_users_managable_by_user(AccessUser, R) :- findall(User, (userClearance(User, UserClearance), has_document_rights(AccessUser, UserClearance)), R).
 
@@ -28,9 +30,11 @@ create_user_as_user(User, Clearance, AccessUser, R) :-      has_user_rights(Acce
                                                             R = CreatedUser.
                                                             
 
-update_user_clearance_as_user(User, Clearance, AccessUser) :-   has_user_rights(AccessUser, Clearance),
-                                                                remove_user_clearance(User),
-                                                                insert_user_clearance(User, Clearance).    
+update_user_clearance_as_user(User, NewClearance, AccessUser) :-    userClearance(User, UserClearance),
+                                                                    has_user_rights(AccessUser, UserClearance),
+                                                                    has_user_rights(AccessUser, NewClearance),
+                                                                    remove_user_clearance(User),
+                                                                    insert_user_clearance(User, NewClearance).    
 
 remove_user_as_user(User, AccessUser) :-    userClearance(User, UserClearance),
                                             has_user_rights(AccessUser, UserClearance),
@@ -40,9 +44,11 @@ create_document_as_user(Document, Clearance, AccessUser, R) :-  has_document_rig
                                                                 insert_document_with_clearance(Document, Clearance, CreatedDocument),
                                                                 R = CreatedDocument.
                                                           
-update_document_clearance_as_user(Document, Clearance, AccessUser) :-   has_document_rights(AccessUser, Clearance),
-                                                                        remove_document_clearance(Document),
-                                                                        insert_document_clearance(Document, Clearance).  
+update_document_clearance_as_user(Document, NewClearance, AccessUser) :-    documentClearance(Document, DocumentClearance),
+                                                                            has_document_rights(AccessUser, DocumentClearance),
+                                                                            has_document_rights(AccessUser, NewClearance),
+                                                                            remove_document_clearance(Document),
+                                                                            insert_document_clearance(Document, NewClearance).  
 
 remove_document_as_user(Document, AccessUser) :-    documentClearance(Document, DocumentClearance), 
                                                     has_document_rights(AccessUser, DocumentClearance),

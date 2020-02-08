@@ -53,10 +53,10 @@ has_document_rights(User, Clearance) :- userClearance(User, UserClearance), high
 % Create/modify/delete users up to one level below own clearance. Special rights: Topsecret user can create topsecret users aswell
 has_user_rights(User, Clearance) :- userClearance(User, UserClearance), (UserClearance = topsecret -> higher_or_equal(UserClearance, Clearance) ; higher(UserClearance, Clearance)).
 
-higher_or_equal(C1, C2) :-  C1 = C2.
+higher_or_equal(C1, C2) :-  C1 == C2, !.
 higher_or_equal(C1, C2) :-  higher(C1, C2).
 
-higher(C1, C2) :-  superior(C1, C2).
+higher(C1, C2) :-  superior(C1, C2), !.
 higher(C1, C2) :-  superior(C1, X), higher(X, C2).
 
 get_all_higher_clearances(Clearance,R) :- superior(C,Clearance) -> get_all_higher_clearances(C,R1), R = [C | R1]; R = [].

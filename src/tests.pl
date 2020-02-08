@@ -43,6 +43,7 @@ test_clearance_base :-
           \+ (documentClearance(docTopsecret, topsecret), specialPermission(_, docTopsecret))
      ).
 
+% TODO remove dependency hell
 test_clearance_api :- 
      "Create user" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,
      % USER
@@ -55,6 +56,7 @@ test_clearance_api :-
           create_user_as_user(_, restricted, OfficialUser, _);
           create_user_as_user(_, topsecret, OfficialUser, _)
      ),
+     % TODO test more throughoutly
      "User should be able to update clearance of another user of a lower level" should_evaluate (
           create_user_as_user(promotedUser, official, Director, PromotedUser),
           update_user_clearance_as_user(OfficialUser, confidential, Director)
@@ -89,7 +91,7 @@ test_clearance_api :-
           update_document_clearance_as_user(DocumentRestricted, official, OfficialUser),
           \+ (update_document_clearance_as_user(DocumentRestricted, secret, OfficialUser))
      ),
-     "User should be able to read & remove Documents up to his level" should_evaluate (
+     "User should be able to remove Documents up to his level" should_evaluate (
           remove_document_as_user(DocumentRestricted, OfficialUser),
           remove_document_as_user(DocumentOfficial, OfficialUser),
           \+ (remove_document_as_user(DocumentTopsecret, OfficialUser))

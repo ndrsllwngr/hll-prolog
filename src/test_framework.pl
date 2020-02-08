@@ -34,7 +34,7 @@ to(should_evaluate(Text, Term),ExpectedResult) :-   term_variables(Term,L),
                                                     call(Term),
                                                     ExpectedResult should_equal R -> write_statement(Text,success) ; write_statement(Text,failure).
 
-write_statement(Text, success) :-  ansi_format([fg(green), bold], 'Success', []), write_text(Text).
+write_statement(Text, success) :-  ansi_format([fg(green), bold], 'Success', []), write_text(Text), !.
 write_statement(Text, failure) :-  ansi_format([fg(red), bold], 'Failure', []), write_text(Text).
 write_text(Text) :-  write(": "), ansi_format([italic], '~w\n', [Text]).
 

@@ -4,9 +4,10 @@
 
 test_clearance_base :-
      "Clearance hierarchies should be able to be checked" should_evaluate (
-          higher(official,unclassified),
-          higher_or_equal(unclassified, unclassified),
-          higher_or_equal(topsecret, official)
+          get_all_higher_clearances(unclassified, R),
+          R should_equal [official, restricted, confidential, secret, topsecret],
+          maplist(higher, R, [unclassified, unclassified, unclassified, unclassified, unclassified]),
+          maplist(next_higher_level, R, [unclassified, official, restricted, confidential, secret])
      ),
      "Users should be insertable with a given clearance" should_evaluate (
           insert_user_with_clearance(userTopSecret, topsecret, _),
@@ -127,4 +128,5 @@ test_test_framework :-
           \+ should_equal([1,1,2,3], [1,2,3])
      ),
      "last_element_of_list should return the last element of the list" should_evaluate last_element_of_list([1,2,3], _) to 3.
+
 

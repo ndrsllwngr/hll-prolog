@@ -8,6 +8,7 @@
     has_user_rights/2,
     higher_or_equal/2,
     higher/2,
+    next_higher_level/2,
     get_all_higher_clearances/2,
     insert_document_with_clearance/3,
     insert_document/1,
@@ -59,8 +60,8 @@ higher_or_equal(C1, C2) :-  higher(C1, C2).
 higher(C1, C2) :-  superior(C1, C2), !.
 higher(C1, C2) :-  superior(C1, X), higher(X, C2).
 
-get_all_higher_clearances(Clearance,R) :- superior(C,Clearance) -> get_all_higher_clearances(C,R1), R = [C | R1]; R = [].
-% next_higher_level(C1, C2) :- superior(C1, C2).
+get_all_higher_clearances(Clearance, R) :- superior(C, Clearance) -> get_all_higher_clearances(C, R1), R = [C | R1]; R = [].
+next_higher_level(C1, C2) :- superior(C1, C2).
 
 % ------- update datamodel basic ------
 

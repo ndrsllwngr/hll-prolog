@@ -44,30 +44,63 @@ test_clearance_base :-
      ).
 
 test_clearance_api :- 
-   "Create user" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,
+     "Create user" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,
+     % USER
+     "Director user should be able to create another user on lower level" should_evaluate create_user_as_user(userOfficial, official, Director, OfficialUser) to userOfficial,
+     "Director user should be able to create another user on his level" should_evaluate create_user_as_user(coDirector, topsecret, Director, CoDirector) to coDirector,
 
-   "Director user should be able to create another user on lower level" should_evaluate create_user_as_user(user, official, Director, OfficialUser) to user,
-   "Director user should be able to create another user on his level" should_evaluate create_user_as_user(coDirector, topsecret, Director, _) to coDirector,
+     "Lower than topsecret user should be able to create a user on a lower level" should_evaluate create_user_as_user(userUnclassified, unclassified, OfficialUser, UnclassifiedUser) to userUnclassified,
+     "Lower than topsecret user should not be able to create a user on his or a higher level" should_not_evaluate (
+          % Maybe mit mapList alle
+          create_user_as_user(_, restricted, OfficialUser, _);
+          create_user_as_user(_, topsecret, OfficialUser, _)
+     ),
+     "User should be able to update clearance of another user of a lower level" should_evaluate (
+          create_user_as_user(promotedUser, official, Director, PromotedUser),
+          update_user_clearance_as_user(OfficialUser, confidential, Director)
+     ),
+     "Director should be able to update clearance of a user to his level" should_evaluate (
+          create_user_as_user(promotedUser, official, Director, PromotedUser),
+          update_user_clearance_as_user(PromotedUser, topsecret, Director)
+     ),
+     "User should not be able to update clearance of another to his or higher a level" should_not_evaluate (
+          create_user_as_user(promotedUser, unclassified, OfficialUser, PromotedUser),
+          \+ (update_user_clearance_as_user(PromotedUser, official, OfficialUser); update_user_clearance_as_user(PromotedUser, secret, OfficialUser))
+     ),
+     "Director should be able to remove a user on his level" should_evaluate (
+          remove_user_as_user(CoDirector, Director)
+     ),
+     "User should only be able to remove a user on a lower level" should_evaluate (
+          remove_user_as_user(UnclassifiedUser, OfficialUser),
+          \+ (remove_user_as_user(Director, OfficialUser))
+     ),
+     % DOCUMENTS
+     "User should be able to create Documents on his or lower level" should_evaluate (
+          create_document_as_user(docOfficial, official, OfficialUser, DocumentOfficial),
+          create_document_as_user(docRestricted, restricted, OfficialUser, DocumentRestricted),
+          create_document_as_user(docTopsecret, topsecret, Director, DocumentTopsecret),
+          \+ (create_document_as_user(docFail, secret, OfficialUser, _))
+     ),
+     "User should be able to read documents up to his level" should_evaluate (
+          get_document(DocumentRestricted, OfficialUser, _),
+          get_document(DocumentOfficial, OfficialUser, _)
+     ),
+     "User should be able to update clearance of Documents up to his level" should_evaluate (
+          update_document_clearance_as_user(DocumentRestricted, official, OfficialUser),
+          \+ (update_document_clearance_as_user(DocumentRestricted, secret, OfficialUser))
+     ),
+     "User should be able to read & remove Documents up to his level" should_evaluate (
+          remove_document_as_user(DocumentRestricted, OfficialUser),
+          remove_document_as_user(DocumentOfficial, OfficialUser),
+          \+ (remove_document_as_user(DocumentTopsecret, OfficialUser))
+     ),
+     % Special Permissions
+     "Special permissions should be grantable and work" should_evaluate (
+          grant_special_permission_as_user(OfficialUser, DocumentTopsecret, Director),
+          get_document(DocumentTopsecret, OfficialUser, _),
+          \+ (update_document_clearance_as_user(DocumentTopsecret, unclassified, OfficialUser); remove_document_as_user(DocumentTopsecret, OfficialUser))
+     ).
 
-   "Lower than topsecret user should be able to create a user on a lower level" should_evaluate create_user_as_user(user, unclassified, OfficialUser, _) to user,
-   "Lower than topsecret user should not be able to create a user on his or a higher level" should_not_evaluate (
-        % Maybe mit mapList alle
-        create_user_as_user(_, restricted, OfficialUser, _);
-        create_user_as_user(_, topsecret, OfficialUser, _)
-   ),
-   "User should be able to update clearance of another user of a lower level" should_evaluate (
-       % create_user_as_user(promotedUser, official, Director, PromotedUser),
-        update_user_clearance_as_user(OfficialUser, secret, Director)
-   ),
-   "Director should be able to update clearance of a user to his level" should_evaluate (
-        create_user_as_user(promotedUser, official, Director, PromotedUser),
-        update_user_clearance_as_user(PromotedUser, topsecret, Director)
-   ),
-   "User should not be able to update clearance of another to his or higher a level" should_not_evaluate (
-        create_user_as_user(promotedUser, unclassified, OfficialUser, PromotedUser),
-        % Maybe mit mapList
-        \+ (update_user_clearance_as_user(PromotedUser, official, OfficialUser); update_user_clearance_as_user(PromotedUser, secret, OfficialUser))
-   ).
    % "Lower than topsecret user should not be able to create a user on his level" should_not_evaluate create_user_as_user(_, restricted, RestrictedUser, _),
    % "Lower than topsecret user should not be able to create a user on his level" should_not_evaluate create_user_as_user(_, restricted, RestrictedUser, _),
 

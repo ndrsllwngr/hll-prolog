@@ -31,14 +31,14 @@
 
 clearanceLevel(topsecret).
 clearanceLevel(secret).
-clearanceLevel(confidencial).
+clearanceLevel(confidential).
 clearanceLevel(restricted).
 clearanceLevel(official).
 clearanceLevel(unclassified).
 
 superior(topsecret,secret).
-superior(secret,confidencial).
-superior(confidencial,restricted).
+superior(secret,confidential).
+superior(confidential,restricted).
 superior(restricted,official).
 superior(official,unclassified).
 
@@ -95,4 +95,4 @@ remove_user(User) :- retractall(user(User)).
 remove_user_clearance(User) :- retractall(userClearance(User, _)).
 
 insert_special_permission(User, Document) :- asserta(specialPermission(User, Document)).
-remove_special_permission(User, Document) :- retractall(specialPermission(_, Document)).
+remove_special_permission(User, Document) :- retractall(specialPermission(_, Document)). % TODO correct?

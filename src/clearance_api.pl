@@ -1,5 +1,6 @@
 :- module(clearance_api, [
     health/1,
+    get_document/3,
     get_documents_accesible_by_user/2,
     get_users_managable_by_user/2,
     create_user_as_user/4,
@@ -7,7 +8,9 @@
     remove_user_as_user/2,
     remove_document_as_user/2,
     update_user_clearance_as_user/3,
-    update_document_clearance_as_user/3
+    update_document_clearance_as_user/3,
+    grant_special_permission_as_user/3,
+    retract_special_pemission_as_user/3
 ]).
 
 :- use_module(library(lists)).
@@ -15,6 +18,7 @@
 
 health(R) :- atom_string(R, "Prolog Clearance System (PCS) API is healthy").
 
+get_document(AccessUser, Document, R) :- ( documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance) ); specialPermission(AccessUser, Document), R = Document.
 get_documents_accesible_by_user(AccessUser, R) :- findall(Document, ((documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance)); specialPermission(AccessUser, Document)), R).
 get_users_managable_by_user(AccessUser, R) :- findall(User, (userClearance(User, UserClearance), has_document_rights(AccessUser, UserClearance)), R).
 
@@ -40,14 +44,14 @@ update_document_clearance_as_user(Document, Clearance, AccessUser) :-   has_docu
                                                                         remove_document_clearance(Document),
                                                                         insert_document_clearance(Document, Clearance).  
 
-remove_document_as_user(Document, AccessUser) :-    (documentClearance(Document, DocumentClearance); specialPermission(AccessUser, Document)),
+remove_document_as_user(Document, AccessUser) :-    documentClearance(Document, DocumentClearance), 
                                                     has_document_rights(AccessUser, DocumentClearance),
                                                     remove_document(Document).
 
-grant_special_permission_as_user(User, Document, AccessUser) :- userClearance(User, UserClearance),
-                                                                has_user_rights(AccessUser, UserClearance),
+grant_special_permission_as_user(User, Document, AccessUser) :- documentClearance(Document, DocumentClearance),
+                                                                has_document_rights(AccessUser, DocumentClearance),
                                                                 insert_special_permission(User, Document).
 
-retract_special_pemission_as_user(User, Document, AccessUser) :-    userClearance(User, UserClearance),
-                                                                    has_user_rights(AccessUser, UserClearance),
+retract_special_pemission_as_user(User, Document, AccessUser) :-    documentClearance(Document, DocumentClearance),
+                                                                    has_document_rights(AccessUser, DocumentClearance),
                                                                     remove_special_permission(User, Document).

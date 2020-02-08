@@ -24,21 +24,24 @@
 			"response": []
 		},
 		{
-			"name": "user/get_managable?access_user=director",
+			"name": "document",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:5004/user/get_managable?access_user=director",
+					"raw": "localhost:5004/document?document=panamaPapers&access_user=director",
 					"host": [
 						"localhost"
 					],
 					"port": "5004",
 					"path": [
-						"user",
-						"get_managable"
+						"document"
 					],
 					"query": [
+						{
+							"key": "document",
+							"value": "panamaPapers"
+						},
 						{
 							"key": "access_user",
 							"value": "director"
@@ -49,7 +52,7 @@
 			"response": []
 		},
 		{
-			"name": "document/get_accessible?access_user=director",
+			"name": "document/get_accessible",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -62,6 +65,31 @@
 					"path": [
 						"document",
 						"get_accessible"
+					],
+					"query": [
+						{
+							"key": "access_user",
+							"value": "director"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user/get_managable",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5004/user/get_managable?access_user=director",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"user",
+						"get_managable"
 					],
 					"query": [
 						{
@@ -179,6 +207,76 @@
 			"response": []
 		},
 		{
+			"name": "document/grant_special_permission_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": " {\n\t\"user\" : \"press\", \n\t\"document\" : \"wikileaks\",\n\t\"access_user\" : \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/document/grant_special_permission_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"document",
+						"grant_special_permission_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "document/retract_special_permission_as_user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user\" : \"press\", \n\t\"document\" : \"wikileaks\",\n\t\"access_user\" : \"director\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5004/document/retract_special_permission_as_user",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"document",
+						"retract_special_permission_as_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "user/create_as_user",
 			"request": {
 				"method": "POST",
@@ -278,76 +376,6 @@
 					"path": [
 						"user",
 						"remove_as_user"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "document/grant_special_permission_as_user",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"user\" : \"press\", \n\t\"document\" : \"wikileaks\",\n\t\"access_user\" : \"director\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:5004/document/grant_special_permission_as_user",
-					"host": [
-						"localhost"
-					],
-					"port": "5004",
-					"path": [
-						"document",
-						"grant_special_permission_as_user"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "document/retract_special_permission_as_user",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"user\" : \"press\", \n\t\"document\" : \"wikileaks\",\n\t\"access_user\" : \"director\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:5004/document/retract_special_permission_as_user",
-					"host": [
-						"localhost"
-					],
-					"port": "5004",
-					"path": [
-						"document",
-						"retract_special_permission_as_user"
 					]
 				}
 			},

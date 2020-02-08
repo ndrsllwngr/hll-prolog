@@ -63,7 +63,7 @@ test_clearance_base :-
      clean_database.
 
 test_clearance_api :- 
-     "Create user" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,
+     "Create user Director" should_evaluate insert_user_with_clearance(director, topsecret, Director) to director,
      % User
      "Director user should be able to create another user on lower level" should_evaluate create_user_as_user(userRestricted, restricted, Director, RestrictedUser) to userRestricted,
      "Director user should be able to create another user on his level" should_evaluate create_user_as_user(coDirector, topsecret, Director, CoDirector) to coDirector,

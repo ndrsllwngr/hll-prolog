@@ -1,21 +1,17 @@
 # hll-prolog
 High level languages: Prolog - Group project (2019/2020)
 
-- short desc.
+- TODO short description
 
 ## Demonstration
 
-tbd
+TODO add ascii recording and postman screenshot
 
-## Installation
+## Requirements
 
-tbd
-
-### Requirements
-
-- SWI Prolog
 ```bash
-$ brew install swipl
+$ swipl --version
+8.1.0
 ```
 
 ## Usage
@@ -30,6 +26,22 @@ $ swipl -s src/main.pl
 $ swipl -s src/tests.pl
 ?- test_all.
 ```
+
+### Use REST API
+
+Start Postman and load `rest_api.postman_collection.json`.
+
+## Libraries
+
+- http/thread_httpd
+- http/http_dispatch
+- http/http_error
+- http/json_convert
+- http/http_client
+- http/html_write
+- http/http_parameters
+- http/http_json
+- lists
 
 ## Contributors (Group ATA)
 

@@ -126,7 +126,7 @@ test_clearance_api :-
 test_test_framework :-
      "should_equal should work for atoms, numerics, strings and terms" should_evaluate (
           should_equal(1, 1),
-          \+ should_equal(1, 2),
+          should_not_equal(1, 2),
           should_equal(test, test),
           should_equal("test", "test"),
           should_equal((1==1), (1==1))
@@ -134,7 +134,7 @@ test_test_framework :-
      "should_equal should work for lists in any order" should_evaluate (
           should_equal([1,2,3], [3,2,1]),
           should_equal([1,2,3], [1,2,3]),
-          \+ should_equal([1,1,2,3], [1,2,3])
+          should_not_equal([1,1,2,3], [1,2,3])
      ),
      "last_element_of_list should return the last element of the list" should_evaluate last_element_of_list([1,2,3], _) to 3.
 

@@ -1,5 +1,5 @@
 # hll-prolog
-High level languages: Prolog - Group project (2019/2020)
+High-level languages: Prolog - Group project (2019/2020)
 
 - Testing Interaction Scenarios - Classified Information System (CIS)
 

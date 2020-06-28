@@ -22,7 +22,7 @@ get_document(Document, AccessUser, R) :- documentClearance(Document, DocumentCle
 get_document(Document, AccessUser, R) :- specialPermission(Document, AccessUser), R = Document.
 
 get_documents_accesible_by_user(AccessUser, R) :- findall(Document, ((documentClearance(Document, DocumentClearance), has_document_rights(AccessUser, DocumentClearance)); specialPermission(Document, AccessUser)), R).
-get_users_managable_by_user(AccessUser, R) :- findall(User, (userClearance(User, UserClearance), has_document_rights(AccessUser, UserClearance)), R).
+get_users_managable_by_user(AccessUser, R) :- findall(User, (userClearance(User, UserClearance), has_user_rights(AccessUser, UserClearance)), R).
 
 create_user_as_user(User, Clearance, AccessUser, R) :-      has_user_rights(AccessUser, Clearance),
                                                             insert_user_with_clearance(User, Clearance, CreatedUser),
